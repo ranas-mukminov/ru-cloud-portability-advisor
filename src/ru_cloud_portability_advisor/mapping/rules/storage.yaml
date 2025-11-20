@@ -1,0 +1,48 @@
+- source_type: aws_s3_bucket
+  source_provider: aws
+  kind: storage
+  notes: "S3 buckets map to S3-compatible object storage in RU clouds."
+  targets:
+    - provider: yandex
+      service: object_storage_bucket
+      status: direct
+    - provider: vk
+      service: object_storage_bucket
+      status: direct
+    - provider: cloud_ru
+      service: evolution_object_storage
+      status: direct
+    - provider: selectel
+      service: object_storage_bucket
+      status: direct
+
+- source_type: google_storage_bucket
+  source_provider: gcp
+  kind: storage
+  notes: "GCS buckets map to object storage buckets."
+  targets:
+    - provider: yandex
+      service: object_storage_bucket
+      status: direct
+    - provider: vk
+      service: object_storage_bucket
+      status: direct
+    - provider: cloud_ru
+      service: evolution_object_storage
+      status: direct
+    - provider: selectel
+      service: object_storage_bucket
+      status: direct
+
+- source_type: hcloud_volume
+  source_provider: hetzner
+  kind: storage
+  notes: "Hetzner volumes map to block storage."
+  targets:
+    - provider: yandex
+      service: compute_disk
+      status: needs_refactor
+    - provider: selectel
+      service: block_storage
+      status: needs_refactor
+

@@ -1,0 +1,63 @@
+- source_type: aws_sqs_queue
+  source_provider: aws
+  kind: queue
+  notes: "SQS queues migrate to managed message queues or Kafka-like services."
+  targets:
+    - provider: yandex
+      service: message_queue
+      status: direct
+    - provider: vk
+      service: message_queue
+      status: direct
+    - provider: cloud_ru
+      service: message_queue
+      status: needs_refactor
+    - provider: selectel
+      service: message_queue
+      status: needs_refactor
+
+- source_type: google_pubsub_subscription
+  source_provider: gcp
+  kind: queue
+  notes: "Pub/Sub needs refactor to message queue/Kafka."
+  targets:
+    - provider: yandex
+      service: managed_kafka
+      status: needs_refactor
+    - provider: vk
+      service: managed_kafka
+      status: needs_refactor
+
+- source_type: aws_lambda_function
+  source_provider: aws
+  kind: function
+  notes: "Managed functions may not have full analogues; K8s CronJob is fallback."
+  targets:
+    - provider: yandex
+      service: serverless_functions
+      status: direct
+    - provider: vk
+      service: serverless_functions
+      status: needs_refactor
+    - provider: cloud_ru
+      service: serverless_functions
+      status: needs_refactor
+    - provider: selectel
+      service: kubernetes_cronjob
+      status: needs_refactor
+
+- source_type: google_cloudfunctions_function
+  source_provider: gcp
+  kind: function
+  notes: "GCP Cloud Functions mapping similar to serverless/cronjobs."
+  targets:
+    - provider: yandex
+      service: serverless_functions
+      status: needs_refactor
+    - provider: vk
+      service: serverless_functions
+      status: needs_refactor
+    - provider: selectel
+      service: kubernetes_cronjob
+      status: needs_refactor
+

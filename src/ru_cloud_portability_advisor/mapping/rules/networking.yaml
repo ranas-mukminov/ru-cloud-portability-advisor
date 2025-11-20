@@ -1,0 +1,42 @@
+- source_type: aws_lb
+  source_provider: aws
+  kind: load_balancer
+  notes: "ALB/NLB migrate to Application/Network LBs or ingress controllers."
+  targets:
+    - provider: yandex
+      service: application_load_balancer
+      status: direct
+    - provider: vk
+      service: load_balancer
+      status: direct
+    - provider: cloud_ru
+      service: application_load_balancer
+      status: direct
+    - provider: selectel
+      service: load_balancer
+      status: direct
+
+- source_type: google_compute_forwarding_rule
+  source_provider: gcp
+  kind: load_balancer
+  notes: "GCE forwarding rules migrate to managed L4/L7 load balancers."
+  targets:
+    - provider: yandex
+      service: application_load_balancer
+      status: needs_refactor
+    - provider: vk
+      service: load_balancer
+      status: needs_refactor
+
+- source_type: hcloud_load_balancer
+  source_provider: hetzner
+  kind: load_balancer
+  notes: "Hetzner LBs map to provider load balancers."
+  targets:
+    - provider: yandex
+      service: network_load_balancer
+      status: direct
+    - provider: selectel
+      service: load_balancer
+      status: direct
+

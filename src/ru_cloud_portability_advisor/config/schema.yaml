@@ -1,0 +1,17 @@
+# Minimal configuration schema used by ru-cloud-portability-advisor.
+# This is not a strict JSONSchema, but documents the expected fields.
+#
+# source_provider: исходный облачный провайдер (aws|gcp|hetzner|other)
+# target_providers: список целевых провайдеров (yandex|vk|cloud_ru|selectel)
+# region_preference: опционально, регион/зона в целевом облаке
+# pricing_file: путь к YAML/JSON с ценами (см. cost/adapters.py)
+# notes: произвольные заметки
+#
+source_provider: aws
+target_providers:
+  - yandex
+  - vk
+region_preference: ru-central1
+pricing_file: ./config/pricing.yaml
+notes: "Example configuration for migration"
+

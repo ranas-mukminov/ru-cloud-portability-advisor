@@ -1,0 +1,36 @@
+- source_type: aws_db_instance
+  source_provider: aws
+  kind: database
+  notes: "RDS maps to managed PostgreSQL/MySQL equivalents."
+  targets:
+    - provider: yandex
+      service: managed_postgresql
+      status: direct
+    - provider: yandex
+      service: managed_mysql
+      status: direct
+    - provider: vk
+      service: managed_postgresql
+      status: direct
+    - provider: cloud_ru
+      service: managed_postgresql
+      status: direct
+    - provider: selectel
+      service: managed_postgresql
+      status: direct
+
+- source_type: google_sql_database_instance
+  source_provider: gcp
+  kind: database
+  notes: "Cloud SQL maps to managed databases."
+  targets:
+    - provider: yandex
+      service: managed_postgresql
+      status: direct
+    - provider: vk
+      service: managed_postgresql
+      status: direct
+    - provider: selectel
+      service: managed_postgresql
+      status: direct
+

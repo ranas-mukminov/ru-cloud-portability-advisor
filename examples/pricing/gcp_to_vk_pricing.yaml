@@ -1,0 +1,19 @@
+gcp:
+  region: europe-west1
+  cost_per_vcpu_hour: 0.048
+  cost_per_gb_ram_hour: 0.009
+  cost_per_gb_storage_month: 0.02
+  cost_per_gb_egress_month: 0.12
+vk:
+  region: ru-1
+  cost_per_vcpu_hour: 0.03
+  cost_per_gb_ram_hour: 0.007
+  cost_per_gb_storage_month: 0.012
+  cost_per_gb_egress_month: 0.03
+selectel:
+  region: ru-1
+  cost_per_vcpu_hour: 0.032
+  cost_per_gb_ram_hour: 0.0075
+  cost_per_gb_storage_month: 0.013
+  cost_per_gb_egress_month: 0.035
+

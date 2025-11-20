@@ -1,0 +1,6 @@
+source_provider: hetzner
+target_providers:
+  - selectel
+region_preference: ru-1
+notes: "Hetzner to Selectel mapping example"
+

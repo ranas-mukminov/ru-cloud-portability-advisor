@@ -1,0 +1,33 @@
+- source_type: aws_eks_cluster
+  source_provider: aws
+  kind: kubernetes
+  notes: "Managed K8s clusters map to managed K8s in RU clouds."
+  targets:
+    - provider: yandex
+      service: managed_kubernetes
+      status: direct
+    - provider: vk
+      service: managed_kubernetes
+      status: direct
+    - provider: cloud_ru
+      service: managed_kubernetes
+      status: direct
+    - provider: selectel
+      service: managed_kubernetes
+      status: direct
+
+- source_type: google_container_cluster
+  source_provider: gcp
+  kind: kubernetes
+  notes: "GKE clusters migrate to managed k8s."
+  targets:
+    - provider: yandex
+      service: managed_kubernetes
+      status: direct
+    - provider: vk
+      service: managed_kubernetes
+      status: direct
+    - provider: selectel
+      service: managed_kubernetes
+      status: direct
+

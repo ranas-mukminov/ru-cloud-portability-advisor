@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ru-cloud-portability-advisor"
+version = "0.1.0"
+description = "Analyze Terraform and Kubernetes configs to map AWS/GCP/Hetzner resources to Russian clouds with migration advice."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "run-as-daemon", email = "hello@run-as-daemon.ru" }
+]
+keywords = ["cloud", "migration", "terraform", "kubernetes", "russia", "yandex", "vkcloud", "cloud.ru", "selectel"]
+dependencies = [
+  "typer>=0.12",
+  "rich>=13.0",
+  "PyYAML>=6.0",
+  "python-hcl2>=4.3",
+  "jsonschema>=4.17",
+  "jinja2>=3.1",
+  "pydantic>=2.0",
+  "tabulate>=0.9",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "mypy",
+  "ruff",
+  "black",
+  "isort",
+  "yamllint",
+  "pip-audit",
+  "bandit",
+]
+
+[project.scripts]
+ru-cloud-advisor = "ru_cloud_portability_advisor.cli.main:app"
+
+[tool.black]
+line-length = 120
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+

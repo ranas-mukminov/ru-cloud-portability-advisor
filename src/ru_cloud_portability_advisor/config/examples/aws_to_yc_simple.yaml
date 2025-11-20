@@ -1,0 +1,7 @@
+source_provider: aws
+target_providers:
+  - yandex
+region_preference: ru-central1
+pricing_file: ../../examples/pricing/aws_to_yc_pricing.yaml
+notes: "Example migration from AWS to Yandex Cloud"
+

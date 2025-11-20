@@ -1,0 +1,13 @@
+aws:
+  region: us-east-1
+  cost_per_vcpu_hour: 0.05
+  cost_per_gb_ram_hour: 0.01
+  cost_per_gb_storage_month: 0.02
+  cost_per_gb_egress_month: 0.09
+yandex:
+  region: ru-central1
+  cost_per_vcpu_hour: 0.035
+  cost_per_gb_ram_hour: 0.008
+  cost_per_gb_storage_month: 0.015
+  cost_per_gb_egress_month: 0.04
+

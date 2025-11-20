@@ -1,0 +1,45 @@
+- source_type: aws_instance
+  source_provider: aws
+  kind: compute
+  notes: "EC2 instances migrate to generic VM instances."
+  targets:
+    - provider: yandex
+      service: compute_instance
+      status: direct
+    - provider: vk
+      service: compute_instance
+      status: direct
+    - provider: cloud_ru
+      service: ecs_compute
+      status: direct
+    - provider: selectel
+      service: compute_cloud_instance
+      status: direct
+
+- source_type: google_compute_instance
+  source_provider: gcp
+  kind: compute
+  notes: "GCE instances migrate to compute instances."
+  targets:
+    - provider: yandex
+      service: compute_instance
+      status: direct
+    - provider: vk
+      service: compute_instance
+      status: direct
+    - provider: cloud_ru
+      service: ecs_compute
+      status: direct
+
+- source_type: hcloud_server
+  source_provider: hetzner
+  kind: compute
+  notes: "Hetzner servers migrate to compute VMs."
+  targets:
+    - provider: yandex
+      service: compute_instance
+      status: direct
+    - provider: selectel
+      service: compute_cloud_instance
+      status: direct
+
