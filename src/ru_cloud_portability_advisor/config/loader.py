@@ -59,7 +59,11 @@ def load_config(path: str | Path) -> AdvisorConfig:
         raise ConfigError("Config must include at least one target_providers entry")
 
     pricing_file = data.get("pricing_file")
-    pricing_path = Path(pricing_file) if pricing_file else None
+    if pricing_file:
+        pf = Path(pricing_file)
+        pricing_path = pf if pf.is_absolute() else (config_path.parent / pf).resolve()
+    else:
+        pricing_path = None
 
     return AdvisorConfig(
         source_provider=source,
@@ -69,4 +73,3 @@ def load_config(path: str | Path) -> AdvisorConfig:
         notes=data.get("notes"),
         raw=data,
     )
-
