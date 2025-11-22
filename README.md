@@ -1,81 +1,211 @@
 # ru-cloud-portability-advisor
-Бренд / сайт автора: https://run-as-daemon.ru
-# ru-cloud-portability-advisor
 
-[![CI](https://github.com/run-as-daemon/ru-cloud-portability-advisor/actions/workflows/ci.yml/badge.svg)](https://github.com/run-as-daemon/ru-cloud-portability-advisor/actions/workflows/ci.yml)
-[![Security](https://github.com/run-as-daemon/ru-cloud-portability-advisor/actions/workflows/security.yml/badge.svg)](https://github.com/run-as-daemon/ru-cloud-portability-advisor/actions/workflows/security.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
 
-## English
-CLI/library that analyzes Terraform and Kubernetes manifests, maps AWS/GCP/Hetzner resources to Russian clouds (Yandex/VK/Cloud.ru/Selectel), and builds migration hints with draft IaC. Features: service mapping table, migration findings, optional cost approximation (user-provided prices), and AI-ready stubs (no keys included). See `README.ru.md` for the detailed guide.
+🇬🇧 English | 🇷🇺 [Русская версия](README.ru.md)
 
-Quick start:
+**ru-cloud-portability-advisor** is a CLI tool for analyzing infrastructure-as-code (Terraform) and Kubernetes manifests to plan migrations from foreign cloud providers (AWS, GCP, Hetzner) to Russian cloud platforms (Yandex Cloud, VK Cloud, Cloud.ru, Selectel).
+
+It parses your existing configuration, identifies resources, maps them to their local equivalents, and generates a detailed migration report with compatibility notes and potential issues.
+
+## Key Features
+
+- **Multi-Cloud Analysis**: Parses Terraform (`.tf`, `.hcl`) and Kubernetes (`.yaml`) files to discover compute, storage, database, and networking resources.
+- **Intelligent Mapping**: Automatically maps source resources (e.g., `aws_instance`, `google_sql_database`) to target equivalents (e.g., `yandex_compute_instance`, `vk_mdb_postgresql`).
+- **Migration Advice**: Highlights feature gaps, version incompatibilities, and required configuration changes.
+- **Flexible Reporting**: Generates reports in JSON, Markdown, or HTML formats.
+- **Extensible Rules**: Mapping logic is defined in YAML files, allowing users to add custom rules or support new providers.
+- **Privacy First**: Runs entirely locally; your infrastructure code is never sent to any external server.
+
+## Architecture / Components
+
+The tool consists of the following modules:
+
+- **Discovery Engine**: Scans directories for Terraform and Kubernetes files using `python-hcl2` and `PyYAML`.
+- **Advisor Core**: Matches discovered resources against a library of mapping rules (`src/ru_cloud_portability_advisor/mapping/rules`).
+- **Reporting Module**: Converts analysis results into human-readable formats (Markdown, HTML) or machine-readable JSON.
+- **CLI Interface**: Built with `typer` for easy interaction.
+
+## Requirements
+
+- **OS**: Linux, macOS, or Windows.
+- **Python**: 3.10 or higher.
+- **Dependencies**:
+  - `terraform` (optional, for accurate HCL parsing context).
+  - `kubectl` (optional, for validating manifests).
+- **Disk Space**: Minimal (<100 MB).
+
+## Quick Start
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/ranas-mukminov/ru-cloud-portability-advisor.git
+   cd ru-cloud-portability-advisor
+   ```
+
+2. **Install the package**:
+   ```bash
+   pip install .
+   ```
+
+3. **Run an analysis**:
+   ```bash
+   # Analyze a Terraform project and output to JSON
+   ru-cloud-advisor analyze-project \
+     --tf-path ./examples/terraform \
+     --out analysis_result.json
+   ```
+
+4. **Generate a readable report**:
+   ```bash
+   # Convert JSON analysis to a Markdown report
+   ru-cloud-advisor generate-report \
+     --input analysis_result.json \
+     --format markdown \
+     --output MIGRATION_PLAN.md
+   ```
+
+## Installation
+
+### From Source
+
+Recommended for developers and latest features:
 
 ```bash
-pip install ru-cloud-portability-advisor
-
-ru-cloud-advisor analyze-project \
-  --tf-path ./infra/terraform \
-  --k8s-path ./infra/k8s \
-  --config ./config/aws-to-yc.yaml \
-  --out ./out/report.json
-
-ru-cloud-advisor generate-report \
-  --input ./out/report.json \
-  --format markdown \
-  --output ./out/report.md
+git clone https://github.com/ranas-mukminov/ru-cloud-portability-advisor.git
+cd ru-cloud-portability-advisor
+pip install .
 ```
 
----
+### Development Setup
 
-## Русский
+To install with testing and linting tools:
 
-### Что это
-- Анализатор Terraform/K8s для миграций из AWS/GCP/Hetzner в российские облака (Yandex/VK/Cloud.ru/Selectel).
-- Отчет по тому, что маппится 1:1, где нужен рефакторинг, а где нет аналога.
-- Черновики Terraform-модулей и K8s-манифестов под целевые облака, плюс ориентировочная оценка стоимости по заданным пользователем тарифам.
-
-Полное руководство и примеры: `README.ru.md`.
-
-### Зачем российскому бизнесу
-- Санкции и уход западных провайдеров требуют локальных альтернатив.
-- Требования по хранению персональных данных в РФ и близости сервисов к клиентам.
-- Нужны быстрые отчеты о рисках, зонах рефакторинга и возможной экономии.
-
-### Как использовать (пример)
 ```bash
-pip install ru-cloud-portability-advisor
-
-ru-cloud-advisor analyze-project \
-  --tf-path ./infra/terraform \
-  --k8s-path ./infra/k8s \
-  --config ./config/aws-to-yc.yaml \
-  --out ./out/report.json
-
-ru-cloud-advisor generate-report \
-  --input ./out/report.json \
-  --format markdown \
-  --output ./out/report.md
+pip install -e ".[dev]"
 ```
 
-### Возможности
-- Каталог маппингов AWS/GCP/Hetzner → Yandex/VK/Cloud.ru/Selectel для storage/DB/K8s/LB/очередей/функций.
-- Отчет о миграции: 1:1, требуется рефакторинг, нет аналога; ключевые риски и рекомендации.
-- Черновики Terraform/K8s под RU-облака с `TODO` для ручного заполнения.
-- Приблизительная оценка стоимости: «как есть» и после миграции (по предоставленным пользователем тарифам, без скрейпа).
-- AI-слой через интерфейс/заглушки: подключайте свои провайдеры LLM по желанию.
+## Configuration
 
-### Профессиональные услуги – run-as-daemon.ru
-Проект развивается DevOps/DevSecOps-инженером с сайта [run-as-daemon.ru](https://run-as-daemon.ru).
+You can customize the analysis using a YAML configuration file. This allows you to specify source/target providers and region preferences.
 
-Если вам нужно:
-- спланировать миграцию из AWS/GCP/Hetzner в Yandex/VK/Cloud.ru/Selectel;
-- оценить риски и возможные точки отказа;
-- оптимизировать затраты в российских облаках,
+**Example Config (`config.yaml`):**
 
-вы можете заказать консалтинг, пилотный проект или миграцию «под ключ».
+```yaml
+# Source provider (aws, gcp, hetzner)
+source_provider: aws
 
-### Лицензия и дисклеймеры
-- Лицензия: Apache-2.0 (см. `LICENSE`).
-- Инструмент не гарантирует юридическое соответствие (152-ФЗ и др.), оценки стоимости примерные.
-- Не содержит обходов санкций или экспортного контроля; цены задаются пользователем. Подробнее в `LEGAL.md`.
+# Target providers to consider
+target_providers:
+  - yandex
+  - vk
+  - selectel
+
+# Preferred target region
+region_preference: ru-central1
+
+# Optional: Path to custom pricing data
+pricing_file: ./custom_pricing.yaml
+
+# Notes for the report
+notes: "Migration project for payment gateway"
+```
+
+Pass this config to the analyzer:
+
+```bash
+ru-cloud-advisor analyze-project \
+  --tf-path ./my-infra \
+  --config ./config.yaml \
+  --out report.json
+```
+
+## Usage & Common Tasks
+
+### Analyze a Hybrid Project
+
+If you have both Terraform and Kubernetes files:
+
+```bash
+ru-cloud-advisor analyze-project \
+  --tf-path ./terraform \
+  --k8s-path ./k8s \
+  --out full_analysis.json
+```
+
+### View Supported Mappings
+
+To see which resources can be automatically mapped:
+
+```bash
+ru-cloud-advisor print-mapping-table
+```
+
+### Generate HTML Report
+
+For a report that can be shared with stakeholders:
+
+```bash
+ru-cloud-advisor generate-report \
+  --input full_analysis.json \
+  --format html \
+  --output migration_report.html
+```
+
+## Update / Upgrade
+
+To update to the latest version from the repository:
+
+```bash
+git pull origin main
+pip install . --upgrade
+```
+
+If you installed via `pip install -e`, simply pulling the latest code is sufficient.
+
+## Logs & Troubleshooting
+
+- **Parsing Errors**: If the tool fails to parse a `.tf` file, ensure it is valid HCL. The tool uses `python-hcl2` which is robust but may stumble on complex dynamic blocks.
+- **Missing Mappings**: If a resource shows as "Unknown" or "No mapping found", check `src/ru_cloud_portability_advisor/mapping/rules`. You can add new rules there.
+- **Verbose Output**: Currently, the tool prints errors to stderr.
+
+## Security Notes
+
+- **Local Execution**: This tool analyzes files locally. No code or credentials are uploaded to any cloud.
+- **Secrets**: The tool does not extract values from `variable` blocks or `secrets.yaml` files, but always ensure you do not commit actual secrets to your repository.
+- **Dependencies**: Regularly update dependencies to patch vulnerabilities:
+  ```bash
+  pip-audit
+  ```
+
+## Project Structure
+
+- `src/ru_cloud_portability_advisor/` — Main package source code.
+  - `advisor/` — Analysis logic.
+  - `mapping/rules/` — YAML definitions for resource mapping.
+  - `cli/` — Command-line interface entry points.
+  - `render/` — Report generation logic.
+- `examples/` — Sample Terraform and Kubernetes projects for testing.
+- `tests/` — Unit and integration tests.
+
+## Contributing
+
+We welcome contributions!
+
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/new-mapping`).
+3. Add your changes (e.g., new mapping rules in `src/.../mapping/rules`).
+4. Run tests: `pytest`.
+5. Commit and push: `git push origin feature/new-mapping`.
+6. Open a Pull Request.
+
+## License
+
+This project is licensed under the [Apache 2.0 License](LICENSE).
+
+## Author and Commercial Support
+
+**Author**: [Ranas Mukminov](https://github.com/ranas-mukminov)
+
+For production-grade migration planning, infrastructure audits, and DevOps support, visit **[run-as-daemon.ru](https://run-as-daemon.ru)** (Russian) or contact the author via GitHub profile.
