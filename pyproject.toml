@@ -37,6 +37,9 @@ dev = [
   "bandit",
 ]
 
+[tool.setuptools.package-data]
+"ru_cloud_portability_advisor.mapping" = ["rules/*.yaml"]
+
 [project.scripts]
 ru-cloud-advisor = "ru_cloud_portability_advisor.cli.main:app"
 
