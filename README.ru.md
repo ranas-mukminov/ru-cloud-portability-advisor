@@ -189,6 +189,35 @@ pip install . --upgrade
 - `examples/` — Примеры проектов Terraform и Kubernetes для тестирования.
 - `tests/` — Модульные и интеграционные тесты.
 
+## Практические кейсы
+
+Все примеры используют файлы, которые есть в этом репозитории, и флаги из `src/ru_cloud_portability_advisor/cli/commands/` (`--tf-path`, `--k8s-path`, `--config`, `--out`, `--input`, `--format`, `--output`).
+
+- **AWS → Yandex Cloud**: `examples/terraform/aws_sample` + конфиг `src/ru_cloud_portability_advisor/config/examples/aws_to_yc_simple.yaml`.
+- **GCP → VK Cloud**: `examples/terraform/gcp_sample` + конфиг `src/ru_cloud_portability_advisor/config/examples/gcp_to_vk_medium.yaml`.
+- **Hetzner → Selectel**: `examples/terraform/hetzner_sample` + конфиг `src/ru_cloud_portability_advisor/config/examples/hetzner_to_selectel.yaml`.
+
+Пример:
+
+```bash
+ru-cloud-advisor analyze-project \
+  --tf-path examples/terraform/aws_sample \
+  --config src/ru_cloud_portability_advisor/config/examples/aws_to_yc_simple.yaml \
+  --out ./out/aws_to_yc.json
+
+ru-cloud-advisor generate-report \
+  --input ./out/aws_to_yc.json \
+  --format html \
+  --output ./out/aws_to_yc_report.html
+```
+
+## Ограничения и комплаенс
+
+- Проект не обходит санкции и экспортный контроль и не содержит скрейпа тарифов: цены вводит пользователь.
+- Нет гарантий юридического соответствия (152-ФЗ и др.); выводы — ориентир для архитектурных решений, юридические проверки выполняются отдельно. Детали — в `LEGAL.md`.
+- Не храните реальные секреты и ключи в репозитории; перед анализом анонимизируйте чувствительные данные и персональные данные в Terraform/Kubernetes-конфигурациях.
+- AI-слой (`src/ru_cloud_portability_advisor/ai/`) — интерфейс с заглушками: без подключённой реализации он возвращает сообщение о том, что провайдер не настроен, и не генерирует готовые Terraform/Kubernetes-файлы сам по себе.
+
 ## Как внести вклад
 
 Мы приветствуем вклад в развитие проекта!
