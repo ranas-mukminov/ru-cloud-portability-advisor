@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
 
 import yaml
 
@@ -12,10 +11,10 @@ from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider
 @dataclass
 class AdvisorConfig:
     source_provider: CloudProvider
-    target_providers: List[CloudProvider]
-    region_preference: Optional[str] = None
-    pricing_file: Optional[Path] = None
-    notes: Optional[str] = None
+    target_providers: list[CloudProvider]
+    region_preference: str | None = None
+    pricing_file: Path | None = None
+    notes: str | None = None
     raw: dict = field(default_factory=dict)
 
 

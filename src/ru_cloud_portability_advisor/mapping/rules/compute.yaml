@@ -42,4 +42,3 @@
     - provider: selectel
       service: compute_cloud_instance
       status: direct
-

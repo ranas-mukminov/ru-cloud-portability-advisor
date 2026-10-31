@@ -31,7 +31,8 @@
 - source_type: aws_lambda_function
   source_provider: aws
   kind: function
-  notes: "Managed functions may not have full analogues; K8s CronJob is fallback."
+  notes: "Managed functions may not have full analogues;
+    K8s CronJob is fallback."
   targets:
     - provider: yandex
       service: serverless_functions
@@ -60,4 +61,3 @@
     - provider: selectel
       service: kubernetes_cronjob
       status: needs_refactor
-

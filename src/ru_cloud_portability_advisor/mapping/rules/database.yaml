@@ -33,4 +33,3 @@
     - provider: selectel
       service: managed_postgresql
       status: direct
-

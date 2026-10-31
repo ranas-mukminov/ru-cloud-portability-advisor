@@ -10,4 +10,3 @@ yandex:
   cost_per_gb_ram_hour: 0.008
   cost_per_gb_storage_month: 0.015
   cost_per_gb_egress_month: 0.04
-

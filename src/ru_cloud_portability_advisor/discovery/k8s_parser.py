@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List
 
 import yaml
 
@@ -14,7 +13,7 @@ class K8sParseError(Exception):
     """Raised when Kubernetes manifests cannot be parsed."""
 
 
-def _infer_provider(annotations: Dict[str, str], spec: Dict | None) -> CloudProvider:
+def _infer_provider(annotations: dict[str, str], spec: dict | None) -> CloudProvider:
     text = " ".join(annotations.values()).lower()
     if "alb" in text or "aws" in text:
         return CloudProvider.AWS
@@ -40,7 +39,7 @@ def _infer_provider(annotations: Dict[str, str], spec: Dict | None) -> CloudProv
     return CloudProvider.UNKNOWN
 
 
-def _classify_kind(kind: str, spec: Dict | None) -> ServiceKind:
+def _classify_kind(kind: str, spec: dict | None) -> ServiceKind:
     if kind in {"Ingress", "IngressRoute"}:
         return ServiceKind.LOAD_BALANCER
     if kind == "Service":
@@ -54,7 +53,7 @@ def _classify_kind(kind: str, spec: Dict | None) -> ServiceKind:
     return ServiceKind.K8S_OBJECT
 
 
-def _parse_document(doc: Dict, source: Path) -> BaseResource | None:
+def _parse_document(doc: dict, source: Path) -> BaseResource | None:
     if not isinstance(doc, dict):
         return None
     kind = doc.get("kind")
@@ -65,7 +64,7 @@ def _parse_document(doc: Dict, source: Path) -> BaseResource | None:
     annotations = metadata.get("annotations") or {}
     spec = doc.get("spec")
     provider = _infer_provider(annotations, spec)
-    service_kind = _classify_kind(kind, spec)
+    service_kind = _classify_kind(kind if isinstance(kind, str) else "", spec)
     return K8sObject(
         name=name,
         provider=provider,
@@ -78,12 +77,12 @@ def _parse_document(doc: Dict, source: Path) -> BaseResource | None:
     )
 
 
-def parse_k8s_directory(path: str | Path) -> List[BaseResource]:
+def parse_k8s_directory(path: str | Path) -> list[BaseResource]:
     root = Path(path)
     if not root.exists():
         raise K8sParseError(f"Kubernetes path does not exist: {path}")
 
-    manifests: List[BaseResource] = []
+    manifests: list[BaseResource] = []
     for file_path in root.rglob("*"):
         if file_path.suffix.lower() not in {".yaml", ".yml", ".json"}:
             continue
@@ -100,4 +99,3 @@ def parse_k8s_directory(path: str | Path) -> List[BaseResource]:
         except Exception as exc:  # pragma: no cover - passthrough logging responsibility
             raise K8sParseError(f"Failed to parse {file_path}: {exc}") from exc
     return manifests
-

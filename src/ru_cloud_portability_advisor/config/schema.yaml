@@ -14,4 +14,3 @@ target_providers:
 region_preference: ru-central1
 pricing_file: ./config/pricing.yaml
 notes: "Example configuration for migration"
-

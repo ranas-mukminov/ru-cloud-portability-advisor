@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional
 
 from ru_cloud_portability_advisor.advisor import recommendations, report_builder
 from ru_cloud_portability_advisor.config.loader import AdvisorConfig, load_config
 from ru_cloud_portability_advisor.cost.estimator import estimate_costs
 from ru_cloud_portability_advisor.discovery.k8s_parser import parse_k8s_directory
-from ru_cloud_portability_advisor.discovery.tf_parser import TerraformParseError, parse_terraform_directory
+from ru_cloud_portability_advisor.discovery.tf_parser import parse_terraform_directory
 from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider
 from ru_cloud_portability_advisor.domain.findings import AnalysisResult, AnalysisSummary, MappingResult, ResourceFinding
 from ru_cloud_portability_advisor.domain.models import BaseResource
@@ -16,13 +15,13 @@ from ru_cloud_portability_advisor.mapping.mapper import map_resources
 
 @dataclass
 class AnalysisInput:
-    tf_path: Optional[str] = None
-    k8s_path: Optional[str] = None
-    config_path: Optional[str] = None
+    tf_path: str | None = None
+    k8s_path: str | None = None
+    config_path: str | None = None
 
 
-def _load_resources(tf_path: Optional[str], k8s_path: Optional[str]) -> List[BaseResource]:
-    resources: List[BaseResource] = []
+def _load_resources(tf_path: str | None, k8s_path: str | None) -> list[BaseResource]:
+    resources: list[BaseResource] = []
     if tf_path:
         resources.extend(parse_terraform_directory(tf_path))
     if k8s_path:
@@ -30,7 +29,7 @@ def _load_resources(tf_path: Optional[str], k8s_path: Optional[str]) -> List[Bas
     return resources
 
 
-def _calculate_summary(mappings: List[MappingResult]) -> AnalysisSummary:
+def _calculate_summary(mappings: list[MappingResult]) -> AnalysisSummary:
     direct = sum(1 for m in mappings if m.status.value == "direct")
     refactor = sum(1 for m in mappings if m.status.value == "needs_refactor")
     no_analog = sum(1 for m in mappings if m.status.value == "no_analog")
@@ -49,7 +48,7 @@ def analyze(input_params: AnalysisInput) -> AnalysisResult:
     resources = _load_resources(input_params.tf_path, input_params.k8s_path)
     mappings = map_resources(resources, target_providers=target_providers)
     summary = _calculate_summary(mappings)
-    findings: List[ResourceFinding] = recommendations.generate_findings(mappings)
+    findings: list[ResourceFinding] = recommendations.generate_findings(mappings)
 
     cost_result = None
     if config:
@@ -70,4 +69,3 @@ def analyze(input_params: AnalysisInput) -> AnalysisResult:
 
 def build_report(result: AnalysisResult) -> dict:
     return report_builder.build_report(result)
-

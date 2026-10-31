@@ -12,4 +12,3 @@ def generate_tf_stub(mapping: MappingResult, provider: AIProvider | None = None)
         "Оставь TODO для полей, требующих ручного ввода. Используй упрощенный пример."
     )
     return ai.complete(prompt)
-

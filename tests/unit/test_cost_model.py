@@ -8,4 +8,3 @@ def test_cost_estimation_with_zero_pricing():
     costs = estimate_costs(resources, CloudProvider.AWS, [CloudProvider.YANDEX], pricing_file=None)
     assert costs.current.estimated_monthly == 0
     assert CloudProvider.YANDEX in costs.target
-

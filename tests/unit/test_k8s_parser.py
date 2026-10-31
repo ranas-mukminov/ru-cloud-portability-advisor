@@ -15,4 +15,3 @@ def test_parse_k8s_directory_samples():
 def test_parse_k8s_directory_not_found():
     with pytest.raises(K8sParseError):
         parse_k8s_directory(Path("non-existent-k8s"))
-

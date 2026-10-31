@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class CloudProvider(str, Enum):
@@ -28,4 +28,3 @@ class MigrationStatus(str, Enum):
     DIRECT = "direct"
     NEEDS_REFACTOR = "needs_refactor"
     NO_ANALOG = "no_analog"
-

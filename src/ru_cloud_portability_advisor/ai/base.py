@@ -4,11 +4,9 @@ from typing import Protocol
 
 
 class AIProvider(Protocol):
-    def complete(self, prompt: str) -> str:
-        ...
+    def complete(self, prompt: str) -> str: ...
 
-    def chat(self, messages: list[dict]) -> str:
-        ...
+    def chat(self, messages: list[dict]) -> str: ...
 
 
 class NoopAIProvider:
@@ -19,4 +17,3 @@ class NoopAIProvider:
 
     def chat(self, messages: list[dict]) -> str:
         return "AI provider is not configured. Provide your own implementation."
-

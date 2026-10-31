@@ -1,13 +1,17 @@
 from __future__ import annotations
 
-from typing import Dict, Iterable, List
+from collections.abc import Iterable
 
 from ru_cloud_portability_advisor.cost.adapters import empty_pricing, load_pricing
 from ru_cloud_portability_advisor.cost.model import CostEstimate, CostModel
 from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider
 from ru_cloud_portability_advisor.domain.findings import CostBreakdown, CostComparison
-from ru_cloud_portability_advisor.domain.models import BaseResource, ComputeInstance, ManagedDatabaseInstance, StorageBucket
-
+from ru_cloud_portability_advisor.domain.models import (
+    BaseResource,
+    ComputeInstance,
+    ManagedDatabaseInstance,
+    StorageBucket,
+)
 
 HOURS_IN_MONTH = 730
 
@@ -33,7 +37,7 @@ def _resource_profile(resource: BaseResource) -> dict:
 
 def _estimate_for_provider(resources: Iterable[BaseResource], pricing: CostModel) -> CostEstimate:
     total = 0.0
-    breakdown: Dict[str, float] = {}
+    breakdown: dict[str, float] = {}
     for resource in resources:
         profile = _resource_profile(resource)
         cpu_cost = profile.get("vcpu", 0) * pricing.pricing.cost_per_vcpu_hour * HOURS_IN_MONTH
@@ -46,12 +50,12 @@ def _estimate_for_provider(resources: Iterable[BaseResource], pricing: CostModel
 
 
 def estimate_costs(
-    resources: List[BaseResource],
+    resources: list[BaseResource],
     source_provider: CloudProvider,
-    target_providers: List[CloudProvider],
+    target_providers: list[CloudProvider],
     pricing_file: str | None = None,
 ) -> CostComparison:
-    pricing: Dict[CloudProvider, CostModel]
+    pricing: dict[CloudProvider, CostModel]
     if pricing_file:
         pricing = load_pricing(pricing_file)
     else:
@@ -62,7 +66,8 @@ def estimate_costs(
 
     current = _estimate_for_provider(resources, current_model)
     target_breakdowns = {
-        provider: _estimate_for_provider(resources, model) for provider, model in target_models.items()
+        provider: CostBreakdown(estimate.monthly_cost, estimate.breakdown)
+        for provider, model in target_models.items()
+        for estimate in [_estimate_for_provider(resources, model)]
     }
     return CostComparison(current=CostBreakdown(current.monthly_cost, current.breakdown), target=target_breakdowns)
-

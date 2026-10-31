@@ -13,4 +13,3 @@ def test_report_builder_contains_sections():
     assert "summary" in report
     assert "mappings" in report
     assert "findings" in report
-

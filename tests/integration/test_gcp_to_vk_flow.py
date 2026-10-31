@@ -11,5 +11,6 @@ def test_gcp_to_vk_flow():
             config_path=str(Path("src/ru_cloud_portability_advisor/config/examples/gcp_to_vk_medium.yaml")),
         )
     )
-    assert any(target.target_provider == CloudProvider.VK for mapping in result.mappings for target in mapping.target_options)
-
+    assert any(
+        target.target_provider == CloudProvider.VK for mapping in result.mappings for target in mapping.target_options
+    )

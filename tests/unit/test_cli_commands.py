@@ -9,4 +9,3 @@ def test_print_mapping_table_command():
     result = runner.invoke(app, ["print-mapping-table"])
     assert result.exit_code == 0
     assert "source_provider" in result.stdout
-

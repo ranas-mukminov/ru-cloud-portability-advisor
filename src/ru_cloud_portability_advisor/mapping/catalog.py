@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List
 
 import yaml
 
@@ -15,15 +14,15 @@ class MappingRule:
     source_type: str
     source_provider: CloudProvider
     kind: ServiceKind
-    targets: List[MappingOption]
+    targets: list[MappingOption]
     notes: str | None = None
 
 
-def _load_rule_file(path: Path) -> List[MappingRule]:
+def _load_rule_file(path: Path) -> list[MappingRule]:
     with path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh) or []
 
-    rules: List[MappingRule] = []
+    rules: list[MappingRule] = []
     for rule in data:
         targets = [
             MappingOption(
@@ -46,9 +45,9 @@ def _load_rule_file(path: Path) -> List[MappingRule]:
     return rules
 
 
-def load_catalog(directory: str | Path | None = None) -> List[MappingRule]:
+def load_catalog(directory: str | Path | None = None) -> list[MappingRule]:
     base_dir = Path(directory) if directory else Path(__file__).parent / "rules"
-    rules: List[MappingRule] = []
+    rules: list[MappingRule] = []
     for path in sorted(base_dir.glob("*.yaml")):
         rules.extend(_load_rule_file(path))
     return rules

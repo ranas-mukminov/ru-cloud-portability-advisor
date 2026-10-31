@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, List, Sequence
+from collections.abc import Iterable, Sequence
 
 from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider, MigrationStatus
 from ru_cloud_portability_advisor.domain.findings import MappingOption, MappingResult
@@ -20,7 +20,7 @@ def _match_rule(resource: BaseResource, rules: Iterable[MappingRule]) -> Mapping
     return None
 
 
-def _overall_status(targets: List[MappingOption]) -> MigrationStatus:
+def _overall_status(targets: list[MappingOption]) -> MigrationStatus:
     statuses = {t.status or MigrationStatus.DIRECT for t in targets}
     if MigrationStatus.DIRECT in statuses:
         return MigrationStatus.DIRECT
@@ -30,12 +30,12 @@ def _overall_status(targets: List[MappingOption]) -> MigrationStatus:
 
 
 def map_resources(
-    resources: List[BaseResource],
+    resources: list[BaseResource],
     target_providers: Sequence[CloudProvider] | None = None,
     rules: Iterable[MappingRule] | None = None,
-) -> List[MappingResult]:
+) -> list[MappingResult]:
     mapping_rules = list(rules) if rules is not None else load_catalog()
-    results: List[MappingResult] = []
+    results: list[MappingResult] = []
     for resource in resources:
         rule = _match_rule(resource, mapping_rules)
         if rule is None:
@@ -49,12 +49,9 @@ def map_resources(
             )
             continue
 
-        filtered_targets = [
-            t for t in rule.targets if not target_providers or t.target_provider in target_providers
-        ]
+        filtered_targets = [t for t in rule.targets if not target_providers or t.target_provider in target_providers]
         status = _overall_status(filtered_targets) if filtered_targets else MigrationStatus.NO_ANALOG
         results.append(
             MappingResult(resource=resource, status=status, target_options=filtered_targets, notes=rule.notes)
         )
     return results
-

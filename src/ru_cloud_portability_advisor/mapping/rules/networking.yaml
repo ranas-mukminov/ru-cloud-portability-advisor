@@ -39,4 +39,3 @@
     - provider: selectel
       service: load_balancer
       status: direct
-

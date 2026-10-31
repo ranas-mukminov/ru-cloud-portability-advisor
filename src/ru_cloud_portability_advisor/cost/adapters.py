@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict
 
 import yaml
 
@@ -14,20 +13,20 @@ class PricingLoadError(Exception):
     """Raised when pricing configuration cannot be loaded."""
 
 
-def _parse_file(path: Path) -> Dict:
+def _parse_file(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as fh:
         if path.suffix.lower() in {".yaml", ".yml"}:
             return yaml.safe_load(fh) or {}
         return json.load(fh)
 
 
-def load_pricing(path: str | Path) -> Dict[CloudProvider, CostModel]:
+def load_pricing(path: str | Path) -> dict[CloudProvider, CostModel]:
     pricing_path = Path(path)
     if not pricing_path.exists():
         raise PricingLoadError(f"Pricing file not found: {path}")
 
     data = _parse_file(pricing_path)
-    models: Dict[CloudProvider, CostModel] = {}
+    models: dict[CloudProvider, CostModel] = {}
     for provider_str, values in data.items():
         provider = CloudProvider(provider_str)
         pricing = Pricing(
@@ -40,6 +39,5 @@ def load_pricing(path: str | Path) -> Dict[CloudProvider, CostModel]:
     return models
 
 
-def empty_pricing(providers: list[CloudProvider]) -> Dict[CloudProvider, CostModel]:
+def empty_pricing(providers: list[CloudProvider]) -> dict[CloudProvider, CostModel]:
     return {provider: CostModel(provider=provider) for provider in providers}
-

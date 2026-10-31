@@ -5,4 +5,3 @@ target_providers:
 region_preference: ru-1
 pricing_file: ../../examples/pricing/gcp_to_vk_pricing.yaml
 notes: "Medium-sized project moving from GCP to VK Cloud/Selectel"
-

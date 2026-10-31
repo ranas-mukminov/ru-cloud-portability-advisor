@@ -15,4 +15,3 @@ def test_gcp_detector():
 def test_hetzner_detector():
     resources = parse_terraform_directory("examples/terraform/hetzner_sample")
     assert hetzner_detector.detect(resources) is True
-

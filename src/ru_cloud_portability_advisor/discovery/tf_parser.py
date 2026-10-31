@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List
 
 try:
-    import hcl2  # type: ignore
+    import hcl2
 except ImportError:  # pragma: no cover
-    hcl2 = None
+    hcl2 = None  # type: ignore[assignment]
 
 from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider, ServiceKind
 from ru_cloud_portability_advisor.domain.models import (
@@ -36,7 +35,7 @@ def _provider_from_type(resource_type: str) -> CloudProvider:
     return CloudProvider.UNKNOWN
 
 
-def _base_kwargs(resource_type: str, name: str, attributes: Dict) -> Dict:
+def _base_kwargs(resource_type: str, name: str, attributes: dict) -> dict:
     region = attributes.get("region") or attributes.get("location")
     return {
         "name": name,
@@ -46,7 +45,7 @@ def _base_kwargs(resource_type: str, name: str, attributes: Dict) -> Dict:
     }
 
 
-def _storage_bucket(resource_type: str, name: str, attributes: Dict) -> StorageBucket:
+def _storage_bucket(resource_type: str, name: str, attributes: dict) -> StorageBucket:
     return StorageBucket(
         kind=ServiceKind.STORAGE,
         versioning=bool(attributes.get("versioning", False)),
@@ -55,7 +54,7 @@ def _storage_bucket(resource_type: str, name: str, attributes: Dict) -> StorageB
     )
 
 
-def _database_instance(resource_type: str, name: str, attributes: Dict) -> ManagedDatabaseInstance:
+def _database_instance(resource_type: str, name: str, attributes: dict) -> ManagedDatabaseInstance:
     return ManagedDatabaseInstance(
         kind=ServiceKind.DATABASE,
         engine=attributes.get("engine"),
@@ -66,7 +65,7 @@ def _database_instance(resource_type: str, name: str, attributes: Dict) -> Manag
     )
 
 
-def _compute_instance(resource_type: str, name: str, attributes: Dict) -> ComputeInstance:
+def _compute_instance(resource_type: str, name: str, attributes: dict) -> ComputeInstance:
     return ComputeInstance(
         kind=ServiceKind.COMPUTE,
         cpu=attributes.get("vcpu") or attributes.get("cores"),
@@ -76,7 +75,7 @@ def _compute_instance(resource_type: str, name: str, attributes: Dict) -> Comput
     )
 
 
-def _k8s_cluster(resource_type: str, name: str, attributes: Dict) -> KubernetesCluster:
+def _k8s_cluster(resource_type: str, name: str, attributes: dict) -> KubernetesCluster:
     return KubernetesCluster(
         kind=ServiceKind.KUBERNETES,
         node_count=attributes.get("node_count"),
@@ -85,7 +84,7 @@ def _k8s_cluster(resource_type: str, name: str, attributes: Dict) -> KubernetesC
     )
 
 
-def _load_balancer(resource_type: str, name: str, attributes: Dict) -> LoadBalancer:
+def _load_balancer(resource_type: str, name: str, attributes: dict) -> LoadBalancer:
     return LoadBalancer(
         kind=ServiceKind.LOAD_BALANCER,
         lb_type=attributes.get("load_balancer_type"),
@@ -94,7 +93,7 @@ def _load_balancer(resource_type: str, name: str, attributes: Dict) -> LoadBalan
     )
 
 
-def _queue(resource_type: str, name: str, attributes: Dict) -> Queue:
+def _queue(resource_type: str, name: str, attributes: dict) -> Queue:
     return Queue(
         kind=ServiceKind.QUEUE,
         fifo=bool(attributes.get("fifo_queue", False)),
@@ -103,7 +102,7 @@ def _queue(resource_type: str, name: str, attributes: Dict) -> Queue:
     )
 
 
-def _function(resource_type: str, name: str, attributes: Dict) -> Function:
+def _function(resource_type: str, name: str, attributes: dict) -> Function:
     return Function(
         kind=ServiceKind.FUNCTION,
         runtime=attributes.get("runtime"),
@@ -113,7 +112,7 @@ def _function(resource_type: str, name: str, attributes: Dict) -> Function:
     )
 
 
-def _classify_resource(resource_type: str, name: str, attributes: Dict) -> BaseResource:
+def _classify_resource(resource_type: str, name: str, attributes: dict) -> BaseResource:
     if resource_type in {"aws_s3_bucket", "google_storage_bucket"}:
         return _storage_bucket(resource_type, name, attributes)
     if resource_type in {"aws_db_instance", "google_sql_database_instance"}:
@@ -137,15 +136,15 @@ def _classify_resource(resource_type: str, name: str, attributes: Dict) -> BaseR
     )
 
 
-def _parse_resource_block(resource_type: str, block: Dict) -> List[BaseResource]:
-    resources: List[BaseResource] = []
+def _parse_resource_block(resource_type: str, block: dict) -> list[BaseResource]:
+    resources: list[BaseResource] = []
     for name, attributes in block.items():
         resources.append(_classify_resource(resource_type, name, attributes))
     return resources
 
 
-def _parse_hcl_doc(doc: Dict) -> List[BaseResource]:
-    resources: List[BaseResource] = []
+def _parse_hcl_doc(doc: dict) -> list[BaseResource]:
+    resources: list[BaseResource] = []
     for resource in doc.get("resource", []):
         if not isinstance(resource, dict):
             continue
@@ -158,7 +157,7 @@ def _parse_hcl_doc(doc: Dict) -> List[BaseResource]:
     return resources
 
 
-def _parse_tf_file(path: Path) -> List[BaseResource]:
+def _parse_tf_file(path: Path) -> list[BaseResource]:
     if path.suffix == ".json":
         with path.open("r", encoding="utf-8") as fh:
             doc = json.load(fh)
@@ -170,12 +169,12 @@ def _parse_tf_file(path: Path) -> List[BaseResource]:
     return _parse_hcl_doc(doc)
 
 
-def parse_terraform_directory(path: str | Path) -> List[BaseResource]:
+def parse_terraform_directory(path: str | Path) -> list[BaseResource]:
     root = Path(path)
     if not root.exists():
         raise TerraformParseError(f"Terraform path does not exist: {path}")
 
-    resources: List[BaseResource] = []
+    resources: list[BaseResource] = []
     for file_path in root.rglob("*"):
         if file_path.suffix not in {".tf", ".json"}:
             continue
@@ -184,4 +183,3 @@ def parse_terraform_directory(path: str | Path) -> List[BaseResource]:
         except Exception as exc:  # pragma: no cover - passthrough logging responsibility
             raise TerraformParseError(f"Failed to parse {file_path}: {exc}") from exc
     return resources
-

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -13,10 +12,10 @@ console = Console()
 
 
 def analyze_project(
-    tf_path: Optional[Path] = typer.Option(None, help="Path to Terraform configuration directory"),
-    k8s_path: Optional[Path] = typer.Option(None, help="Path to Kubernetes manifests directory"),
-    config: Optional[Path] = typer.Option(None, help="Path to advisor configuration YAML"),
-    out: Optional[Path] = typer.Option(None, help="Output path for JSON report"),
+    tf_path: Path | None = typer.Option(None, help="Path to Terraform configuration directory"),  # noqa: B008
+    k8s_path: Path | None = typer.Option(None, help="Path to Kubernetes manifests directory"),  # noqa: B008
+    config: Path | None = typer.Option(None, help="Path to advisor configuration YAML"),  # noqa: B008
+    out: Path | None = typer.Option(None, help="Output path for JSON report"),  # noqa: B008
 ) -> None:
     try:
         result = analyze(
@@ -26,7 +25,7 @@ def analyze_project(
                 config_path=str(config) if config else None,
             )
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         console.print(f"[red]Ошибка анализа:[/red] {exc}")
         raise typer.Exit(code=1)
 

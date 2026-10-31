@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Dict
 
-
-def render_markdown(report: Dict) -> str:
+def render_markdown(report: dict) -> str:
     lines = [
         "# Отчет по миграции",
         "",
@@ -17,9 +15,7 @@ def render_markdown(report: Dict) -> str:
     for mapping in report.get("mappings", []):
         lines.append(f"- **{mapping['resource']['name']}** ({mapping['resource']['kind']}): {mapping['status']}")
         for target in mapping.get("targets", []):
-            lines.append(
-                f"  - ➡️ {target['provider']} / {target['service']} (status={target.get('status')})"
-            )
+            lines.append(f"  - ➡️ {target['provider']} / {target['service']} (status={target.get('status')})")
     if report.get("findings"):
         lines.append("\n## Замечания и рекомендации")
         for finding in report["findings"]:
@@ -34,4 +30,3 @@ def render_markdown(report: Dict) -> str:
         for provider, breakdown in (report["cost"]["target"]).items():
             lines.append(f"  - {provider}: {breakdown.get('estimated_monthly')}")
     return "\n".join(lines)
-

@@ -13,4 +13,3 @@ def explain(mapping: MappingResult, provider: AIProvider | None = None) -> str:
         "Ответ должен быть лаконичным и пригодным для отчета."
     )
     return ai.complete(prompt)
-

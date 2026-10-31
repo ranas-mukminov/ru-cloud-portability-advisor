@@ -16,4 +16,3 @@ spec:
                 name: web-gce
                 port:
                   number: 80
-

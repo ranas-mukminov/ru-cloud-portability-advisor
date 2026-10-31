@@ -18,4 +18,3 @@ def test_parse_tf_directory_samples():
 def test_parse_tf_directory_not_found():
     with pytest.raises(TerraformParseError):
         parse_terraform_directory(Path("non-existent-path"))
-

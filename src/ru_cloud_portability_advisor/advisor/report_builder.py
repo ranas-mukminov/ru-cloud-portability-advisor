@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from ru_cloud_portability_advisor.domain.findings import AnalysisResult
+from ru_cloud_portability_advisor.domain.models import BaseResource
 
 
-def _serialize_resource(resource) -> dict:
+def _serialize_resource(resource: BaseResource) -> dict:
     return {
         "name": resource.name,
         "provider": resource.provider.value,
@@ -49,4 +50,3 @@ def build_report(result: AnalysisResult) -> dict:
         ],
         "cost": result.cost.__dict__ if result.cost else None,
     }
-

@@ -15,4 +15,3 @@ def test_full_analysis_pipeline():
     assert isinstance(result, AnalysisResult)
     assert result.mappings
     assert result.summary is not None
-

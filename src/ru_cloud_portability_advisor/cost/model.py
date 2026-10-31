@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict
 
 from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider
 
@@ -24,5 +23,4 @@ class CostModel:
 @dataclass
 class CostEstimate:
     monthly_cost: float
-    breakdown: Dict[str, float] = field(default_factory=dict)
-
+    breakdown: dict[str, float] = field(default_factory=dict)

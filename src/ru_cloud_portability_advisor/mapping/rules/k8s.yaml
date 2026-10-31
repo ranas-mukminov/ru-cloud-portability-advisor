@@ -30,4 +30,3 @@
     - provider: selectel
       service: managed_kubernetes
       status: direct
-

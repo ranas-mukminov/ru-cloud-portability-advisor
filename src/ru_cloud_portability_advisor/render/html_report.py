@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Dict
 
-
-def render_html(report: Dict) -> str:
+def render_html(report: dict) -> str:
     rows = ""
     for mapping in report.get("mappings", []):
         targets = ", ".join(f"{t['provider']}:{t['service']}" for t in mapping.get("targets", []))
@@ -34,4 +32,3 @@ def render_html(report: Dict) -> str:
     </html>
     """
     return html
-

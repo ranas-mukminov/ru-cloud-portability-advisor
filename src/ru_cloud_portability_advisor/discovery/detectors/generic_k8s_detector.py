@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from ru_cloud_portability_advisor.domain.cloud_enums import CloudProvider, ServiceKind
 from ru_cloud_portability_advisor.domain.models import BaseResource
@@ -19,5 +19,4 @@ def detect(resources: Iterable[BaseResource]) -> CloudProvider:
         provider_counts[provider] = provider_counts.get(provider, 0) + 1
     if not provider_counts:
         return CloudProvider.UNKNOWN
-    return max(provider_counts, key=provider_counts.get)
-
+    return max(provider_counts, key=lambda provider: provider_counts[provider])

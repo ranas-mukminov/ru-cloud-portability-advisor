@@ -12,4 +12,3 @@ def test_aws_to_yandex_flow():
         )
     )
     assert any(m.status == MigrationStatus.DIRECT for m in result.mappings)
-

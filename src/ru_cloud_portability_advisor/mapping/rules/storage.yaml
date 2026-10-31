@@ -45,4 +45,3 @@
     - provider: selectel
       service: block_storage
       status: needs_refactor
-

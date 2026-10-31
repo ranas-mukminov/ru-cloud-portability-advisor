@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ruff src tests
+ruff check src tests
 black --check src tests
 isort --check-only src tests
 mypy src
