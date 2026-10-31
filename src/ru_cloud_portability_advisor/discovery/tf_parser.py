@@ -55,12 +55,15 @@ def _storage_bucket(resource_type: str, name: str, attributes: dict) -> StorageB
 
 
 def _database_instance(resource_type: str, name: str, attributes: dict) -> ManagedDatabaseInstance:
+    # allocated_storage is a storage size (GB), not a cpu count, and
+    # instance_class / tier are class names, not numeric memory sizes.
+    # Putting either into a numeric field crashed cost estimation
+    # (str * float); leave cpu/memory unset so the estimator's documented
+    # crude defaults apply.
     return ManagedDatabaseInstance(
         kind=ServiceKind.DATABASE,
         engine=attributes.get("engine"),
-        cpu=attributes.get("allocated_storage"),
-        memory_gb=attributes.get("instance_class"),
-        storage_gb=attributes.get("storage_gb"),
+        storage_gb=attributes.get("allocated_storage") or attributes.get("storage_gb"),
         **_base_kwargs(resource_type, name, attributes),
     )
 
@@ -143,7 +146,29 @@ def _parse_resource_block(resource_type: str, block: dict) -> list[BaseResource]
     return resources
 
 
+def _unquote(value: object) -> object:
+    """Strip the surrounding quotes newer python-hcl2 keeps on keys/values.
+
+    hcl2 4 returned bare keys and string values; hcl2 8 returns them with
+    literal surrounding double quotes (e.g. '"aws_s3_bucket"'). Stripping
+    only a matching pair of outer quotes is a no-op for hcl2 4 output.
+    """
+    if isinstance(value, str) and len(value) >= 2 and value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    return value
+
+
+def _normalize_hcl(value: object) -> object:
+    """Recursively normalise an hcl2 document for both parser versions."""
+    if isinstance(value, dict):
+        return {str(_unquote(key)): _normalize_hcl(item) for key, item in value.items() if key != "__is_block__"}
+    if isinstance(value, list):
+        return [_normalize_hcl(item) for item in value]
+    return _unquote(value)
+
+
 def _parse_hcl_doc(doc: dict) -> list[BaseResource]:
+    doc = _normalize_hcl(doc)  # type: ignore[assignment]
     resources: list[BaseResource] = []
     for resource in doc.get("resource", []):
         if not isinstance(resource, dict):
