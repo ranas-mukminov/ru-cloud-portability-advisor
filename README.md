@@ -189,6 +189,88 @@ If you installed via `pip install -e`, simply pulling the latest code is suffici
 - `examples/` — Sample Terraform and Kubernetes projects for testing.
 - `tests/` — Unit and integration tests.
 
+## Dependencies
+
+From `pyproject.toml` (Python 3.10+):
+
+- `typer>=0.12` — CLI framework
+- `rich>=13.0` — terminal formatting
+- `PyYAML>=6.0` — YAML parsing
+- `python-hcl2>=4.3` — Terraform HCL parsing
+- `jsonschema>=4.17` — configuration validation
+- `jinja2>=3.1` — template rendering
+- `pydantic>=2.0` — data validation
+- `tabulate>=0.9` — table formatting
+
+Development extras (`pip install -e ".[dev]"`) add `pytest`, `mypy`, `ruff`, `black`, `isort`, `yamllint`, `pip-audit`, and `bandit`.
+
+## What Is Analyzed
+
+- **Infrastructure discovery**: Terraform resources and Kubernetes manifests, with automatic source-provider detection (AWS, GCP, Hetzner).
+- **Service mapping**: storage, databases, Kubernetes, load balancers, queues, and serverless functions, mapped to Yandex Cloud, VK Cloud, Cloud.ru, and Selectel equivalents using `src/ru_cloud_portability_advisor/mapping/rules/`.
+- **Migration assessment**: 1:1 mappings, mappings that need refactoring, and services with no direct equivalent, plus risk notes.
+- **Cost estimation**: current vs. target cost, estimated only from pricing data supplied by the user in a pricing file (see `examples/pricing/`); the tool does not scrape provider tariffs.
+- **Generated artifacts**: JSON/Markdown/HTML migration reports. The AI layer (`src/ru_cloud_portability_advisor/ai/`) is an interface with stub implementations only — it returns a "not configured" placeholder until a provider implementation is supplied; it does not generate finished Terraform or Kubernetes files by itself.
+
+## Examples
+
+All three use sample inputs that exist in this repository and the CLI flags in `src/ru_cloud_portability_advisor/cli/commands/` (`--tf-path`, `--k8s-path`, `--config`, `--out`, `--input`, `--format`, `--output`).
+
+### AWS to Yandex Cloud
+
+```bash
+ru-cloud-advisor analyze-project \
+  --tf-path examples/terraform/aws_sample \
+  --config src/ru_cloud_portability_advisor/config/examples/aws_to_yc_simple.yaml \
+  --out ./out/aws_to_yc.json
+
+ru-cloud-advisor generate-report \
+  --input ./out/aws_to_yc.json \
+  --format html \
+  --output ./out/aws_to_yc_report.html
+```
+
+### GCP to VK Cloud
+
+```bash
+ru-cloud-advisor analyze-project \
+  --tf-path examples/terraform/gcp_sample \
+  --k8s-path examples/k8s \
+  --config src/ru_cloud_portability_advisor/config/examples/gcp_to_vk_medium.yaml \
+  --out ./out/gcp_to_vk.json
+```
+
+### Hetzner to Selectel
+
+```bash
+ru-cloud-advisor analyze-project \
+  --tf-path examples/terraform/hetzner_sample \
+  --config src/ru_cloud_portability_advisor/config/examples/hetzner_to_selectel.yaml \
+  --out ./out/hetzner_to_selectel.json
+```
+
+## Configuration
+
+Configuration files follow the fields documented in `src/ru_cloud_portability_advisor/config/schema.yaml`:
+
+```yaml
+source_provider: aws  # aws | gcp | hetzner
+target_providers:
+  - yandex  # yandex | vk | cloud_ru | selectel
+region_preference: ru-central1  # optional
+pricing_file: ./pricing/aws_to_yc_pricing.yaml  # optional, user-supplied prices
+notes: "Migration project notes"  # optional
+```
+
+See `src/ru_cloud_portability_advisor/config/examples/` and `examples/pricing/` for complete examples. Pricing files use per-unit fields such as `cost_per_vcpu_hour`, `cost_per_gb_ram_hour`, `cost_per_gb_storage_month`, and `cost_per_gb_egress_month` — not a nested per-instance-type price list.
+
+## Troubleshooting
+
+- **No resources detected**: check that `--tf-path` and `--k8s-path` point at directories containing `.tf` or `.yaml`/`.yml` files, and that Terraform resources use a recognised provider syntax (for example `aws_instance`, `google_compute_instance`).
+- **Mapping not found**: a resource may show as unknown or with no equivalent. Run `ru-cloud-advisor print-mapping-table` to see the available mappings, check the detected source provider, and review `src/ru_cloud_portability_advisor/mapping/rules/`.
+- **Cost estimation shows "N/A" or looks wrong**: cost estimation needs a `pricing_file` in the configuration, in the format used by `examples/pricing/`, covering the resource types in the input.
+- **Parsing errors**: validate the input first (`terraform validate` for Terraform, YAML validation for Kubernetes manifests) and check that files are UTF-8 encoded; parser errors include file paths and line numbers.
+
 ## Contributing
 
 We welcome contributions!
